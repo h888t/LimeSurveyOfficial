@@ -548,7 +548,10 @@ $googleMapsAPIKey = '';
 $iFileUploadTotalSpaceMB=0;
 
 //DO NOT EVER CHANGE THE FOLLOWING 5 LINES ---------------
-require_once(dirname(__FILE__).'/config.php');
+$configFile = empty($_SERVER['LIME_CONFIG_FILE']) ?
+    dirname(__FILE__) . '/config.php' :
+    $_SERVER['LIME_CONFIG_FILE'];
+require_once($configFile);
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']!='' && $_SERVER['HTTPS']!='off')
 {
        $rooturl=str_replace('http://', 'https://', $rooturl);
@@ -571,7 +574,9 @@ $homeurl                 = "$rooturl/admin";         // The website location (ur
 $publicurl               = "$rooturl";               // The public website location (url) of the public survey script
 $tempurl                 = "$rooturl/tmp";
 $imageurl                = "$rooturl/images";        // Location of button bar files for admin script
-$uploadurl               = "$rooturl/upload";
+if (empty($uploadurl)) {
+  $uploadurl               = "$rooturl/upload";
+}
 $standardtemplaterooturl = "$rooturl/templates";     // Location of the standard templates
 $usertemplaterooturl     = "$uploadurl/templates";   // Location of the user templates
 
@@ -580,7 +585,9 @@ $homedir                 = "$rootdir".DIRECTORY_SEPARATOR."admin";       // The 
 $publicdir               = "$rootdir";                                   // The directory path of the public scripts
 $tempdir                 = "$rootdir".DIRECTORY_SEPARATOR."tmp";         // The directory path where LimeSurvey can store temporary files
 $imagedir                = "$rootdir".DIRECTORY_SEPARATOR."images";      // The directory path of the image directory
-$uploaddir               = "$rootdir".DIRECTORY_SEPARATOR."upload";
+if (empty($uploaddir)) {
+  $uploaddir               = "$rootdir".DIRECTORY_SEPARATOR."upload";
+}
 $standardtemplaterootdir = "$rootdir".DIRECTORY_SEPARATOR."templates";   // The directory path of the standard templates
 $usertemplaterootdir     = "$uploaddir".DIRECTORY_SEPARATOR."templates"; // The directory path of the user templates
 
