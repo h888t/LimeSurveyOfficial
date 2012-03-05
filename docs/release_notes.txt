@@ -1,4 +1,4 @@
-Welcome to LimeSurvey v1.91+!
+Welcome to LimeSurvey v1.92!
 
 Warranty: This program is provided "as is" without warranties of any kind, either expressed or implied, 
 including, but not limited to, the implied warranties of merchantability and fitness for a particular 
@@ -76,6 +76,45 @@ HOW TO UPGRADE from a LimeSurvey 1.70(+) version to the latest 1.9x
 11. Done.
 
 Thank you to everyone who helped with this new release!
+
+Changes from 1.91+ (build 120302) to 1.92 (build 120303) Mar 3, 2012
++New feature #5780: Information when there is no matching label set (shnoulle)
++New feature #5103: Support conditional piping/tailoring and complex calculations via embedded equation parser (tmswhite)
++New feature #5104: Create new question type for stored calculation results, called Equation (tmswhite)
++New feature #5268: Do all LimeReplacementField and Token replacements in a single function (tmswhite)
++New feature #5269: Use ExpressionManager for Branching logic as optional alternative to Conditions (tmswhite)
++New feature #5279: Add a GUI for ExpressionManager (tmswhite)
++New feature #5288: Optionally replace Assessments with ExpressionManager features (tmswhite)
++New feature: Each type of validation tip can be styled separately (so if a question fails validation checks, you can see whether it is because of wrong number of answers, wrong value range, wrong sum range, or wrong regex criteria). (tmswhite)
++New feature: JavaScript question type selector and Editarea template can be desactivated by user (shnoulle)
++New feature: EM reserved word "this" which refers the the current sgqa code (tmswhite)
++New feature: Question_attribute 'em_validation_q': "Boolean equation to validate the whole question" (tmswhite)
++New feature: Question_attribute 'em_validation_q_tip': "Tip to show user describing the Question Validation Equation" (tmswhite)
++New feature: Question_attribute 'em_validation_sq': "Boolean equation to validate each sub-question." (tmswhite)
++New feature: Question_attribute 'em_validation_sq_tip': "Tip to show user describing the Sub-Question Validation Equation." (tmswhite)
++New feature: Added Tools button to access Expression Manager Test Suite (tmswhite)
++New feature: Allow Regular-Expression validation of question type ';' (ARRAY (Multi Flexi) Text) (tmswhite)
++New feature: Allow Regular-Expression validation of question type 'Q' (Multiple Short Text) (tmswhite)
++New feature: Google Analytics Support (tmswhite)
++New feature: Support dynamic validation range for multiflexible_min and multiflexible_max when in text input mode (tmswhite)
++New feature: dropdown_prefix attribute for List (dropdown) - lets you prefix each entry with its visible order in the list (tmswhite)
++New feature: dropdown_size attribute for List (dropdown) - lets you specify number of visible rows in the dropdown box (tmswhite)
++New feature: Code/QID visible in quick-translation answers/subquestions/questions for easier orientation (c_schmitz)
++New feature: Show Logic File for Entire Survey, with all conditions, validation, and tailoring (tmswhite)
++New feature: Sets "equals" as the default comparison operator for conditions (jcleeland)
++New feature: Quick-add feature for label sets which (was in _dev branch but was accidentally removed with merge in from _dev_tms branch) (tmswhite)
+#Updated feature: Added German translations to 1.91 sample survey. (maziminke)
+#Updated feature: Browse of submitted responses now only shows relevant questions and answers. (tmswhite)
+#Updated feature: Default values now available for the following question types: Date, Short/Long/Huge Text, Multiple ShortText, Multiple Numerical (tmswhite)
+#Updated feature: Deprecated min_num_value_sgqa, max_num_value_sgqa, and num_value_equals_sgqa (tmswhite)
+#Updated feature: array_filter - now also available for multiple_numeric and multiple_short_text (tmswhite)
+#Updated feature: exclude_all_others - now also available for multiple_choice_with_comments (tmswhite)
+#Updated feature: max_answers - now also available for all array types, multiple_numeric and multiple_short_text (tmswhite)
+#Updated feature: max_num_value_n - now also available for multiple_numeric (tmswhite)
+#Updated feature: min_answers - now also available for all array types, multiple_numeric and multiple_short_text (tmswhite)
+#Updated feature: Add many more unit tests to EM and group/sort them.  Contributed by GCi participant Aaron Schmitz (tmswhite)
+#Updated feature: min_num_value_n - now also available for multiple_numeric (tmswhite)
+
 
 Changes from 1.91+ (build 120224) to 1.91+ (build 120302) Mar 2, 2012
 -Fixed issue #5721: Login with admin and default password doesn't work on Postgres with certain server versions (Carsten Schmitz)
