@@ -443,7 +443,7 @@ function validation_message($ia,$show)
     if (!$show) {
         $class .= ' hide-tip';
     }
-    $tip = '<span class="' . $class . '" id="' . $ia[0] . '_vmsg">' . $qinfo['validTip'] . "</span>";
+    $tip = '<span class="' . $class . '" id="vmsg_' . $ia[0] . '">' . $qinfo['validTip'] . "</span>";
     $isValid = $qinfo['valid'];
     return array($tip,$isValid);
 //    if (!$qinfo['valid']) {
@@ -4006,7 +4006,7 @@ function do_shortfreetext($ia)
         //NEW: textarea instead of input=text field
 
         // --> START NEW FEATURE - SAVE
-        $answer = '<textarea class="textarea '.$kpclass.'" name="'.$ia[1].'" id="answer'.$ia[1].'" <label for="answer'.$ia[1].'" class="hide label">'.$clang->gT('Answer').'</label>'
+        $answer = '<label for="answer'.$ia[1].'" class="hide label">'.$clang->gT('Answer').'</label><textarea class="textarea '.$kpclass.'" name="'.$ia[1].'" id="answer'.$ia[1].'"'
         .'rows="'.$drows.'" cols="'.$tiwidth.'" '.$maxlength.' onchange="'.$checkconditionFunction.'(this.value, this.name, this.type);" '.$numbersonly.'>';
         // --> END NEW FEATURE - SAVE
 
@@ -6011,9 +6011,9 @@ function do_array_multiflexi($ia)
                     . " aelt=document.getElementById('answer{$myfname2}');"
                     . " jelt=document.getElementById('java{$myfname2}');"
                     . " if(this.checked) {"
-                    . "  aelt.value=1;jelt.value=1;$checkconditionFunction(1,'answer{$myfname2}',aelt.type);"
+                    . "  aelt.value=1;jelt.value=1;$checkconditionFunction(1,'{$myfname2}',aelt.type);"
                     . " } else {"
-                    . "  aelt.value=0;jelt.value=0;$checkconditionFunction(0,'answer{$myfname2}',aelt.type);"
+                    . "  aelt.value=0;jelt.value=0;$checkconditionFunction(0,'{$myfname2}',aelt.type);"
                     . " }; return true;\" "
                     //					. " onchange=\"checkconditions(this.value, this.name, this.type)\" "
                     . " />\n";

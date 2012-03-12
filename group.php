@@ -95,7 +95,7 @@ else
     {
         // then trying to resubmit (e.g. Next, Previous, Submit) from a cached copy of the page
         // Does not try to save anything from the page to the database
-        $moveResult = LimeExpressionManager::GetLastMoveResult();
+        $moveResult = LimeExpressionManager::GetLastMoveResult(true);
         if (isset($_POST['thisstep']) && isset($moveResult['seq']) && $_POST['thisstep'] == $moveResult['seq'])
         {
             // then pressing F5 or otherwise refreshing the current page, which is OK
@@ -180,7 +180,7 @@ else
         }
         if (!isset($moveResult) && !($surveyMode != 'survey' && $_SESSION['step'] == 0)) {
             // Just in case not set via any other means, but don't do this if it is the welcome page
-            $moveResult = LimeExpressionManager::GetLastMoveResult();
+            $moveResult = LimeExpressionManager::GetLastMoveResult(true);
             $LEMskipReprocessing=true;
         }
     }
@@ -249,7 +249,7 @@ else
             showsaveform(); // reshow the form if there is an error
         }
 
-        $moveResult = LimeExpressionManager::GetLastMoveResult();
+        $moveResult = LimeExpressionManager::GetLastMoveResult(true);
         $LEMskipReprocessing=true;
 
         // TODO - does this work automatically for token answer persistence? Used to be savedsilent()
@@ -720,7 +720,8 @@ print <<<END
 	{
         newval = value;
         if (LEMradix === ',') {
-            newval = value.split(',').join('.');
+            newval = new String(value);
+            newval = newval.split(',').join('.');
         }
         if (newval != parseFloat(newval)) {
             newval = '';
@@ -763,6 +764,32 @@ print <<<END
             $('#java'+name).val(value);
         }
         ExprMgr_process_relevance_and_tailoring(evt_type,name,type);
+
+END;
+
+if ($previewgrp)
+{
+    // force the group to be visible, even if irrelevant - will not always work
+    print <<<END
+    $('#relevanceG' + LEMgid).val(1);
+    $(document).ready(function() {
+        $('#group-' + LEMgid).show();
+    });
+    $(document).change(function() {
+        $('#group-' + LEMgid).show();
+    });
+    $(document).bind('keydown',function(e) {
+                if (e.keyCode == 9) {
+                    $('#group-' + LEMgid).show();
+                    return true;
+                }
+                return true;
+            });
+            
+END;
+}
+
+print <<<END
 	}
 // -->
 </script>
@@ -801,7 +828,7 @@ foreach ($_SESSION['grouplist'] as $gl)
     echo "\n\n<!-- START THE GROUP -->\n";
     echo "\n\n<div id='group-$gid'";
     $gnoshow = LimeExpressionManager::GroupIsIrrelevantOrHidden($gid);
-    if  ($gnoshow)
+    if  ($gnoshow && !$previewgrp)
     {
         echo " style='display: none;'";
     }
