@@ -184,7 +184,7 @@
 
             $queries = array();
             foreach ($releqns as $key=>$value) {
-                $query = "UPDATE ".db_table_name('questions')." SET relevance='".addslashes($value)."' WHERE qid=".$key;
+                $query = "UPDATE ".db_table_name('questions')." SET relevance=".db_quoteall($value)." WHERE qid=".$key;
                 db_execute_assoc($query);
                 $queries[] = $query;
             }
@@ -303,16 +303,16 @@
                     $value = substr($value,1,-1);
                 }
                 else if (preg_match('/^{.+}$/',$value)) {
-                    $value = substr($value,1,-1);
-                }
-                else if ($row['method'] == 'RX') {
-                    if (!preg_match('#^/.*/$#',$value))
-                    {
-                        $value = '"/' . $value . '/"';  // if not surrounded by slashes, add them.
+                        $value = substr($value,1,-1);
                     }
-                }
-                else {
-                    $value = '"' . $value . '"';
+                    else if ($row['method'] == 'RX') {
+                            if (!preg_match('#^/.*/$#',$value))
+                            {
+                                $value = '"/' . $value . '/"';  // if not surrounded by slashes, add them.
+                            }
+                    }
+                    else {
+                        $value = '"' . $value . '"';
                 }
 
                 // add equation
@@ -2168,8 +2168,8 @@
                         break;
                     case '|': //File Upload
                         // Only want the use the one that ends in '_filecount'
-//                        $goodcode = preg_replace("/^(.*?)(_filecount)?$/","$1",$sgqa);
-//                        $jsVarName = $goodcode . '_filecount';
+                        //                        $goodcode = preg_replace("/^(.*?)(_filecount)?$/","$1",$sgqa);
+                        //                        $jsVarName = $goodcode . '_filecount';
                         $jsVarName = $sgqa;
                         $jsVarName_on = $jsVarName;
                         break;
@@ -3412,31 +3412,30 @@
                         if (($this->debugLevel & LEM_DEBUG_VALIDATION_SUMMARY) == LEM_DEBUG_VALIDATION_SUMMARY) {
                             $message .= ';<br/>'.$query;
                         }
-
-                        // Check Quotas
-                        $bQuotaMatched = false;
-                        $aQuotas = check_quota('return', $this->sid);
-                        if ($aQuotas !== false)
+                    }
+                    elseif ($this->surveyOptions['allowsave'] && isset($_SESSION['scid']))
+                    {
+                        $connect->Execute("UPDATE " . db_table_name("saved_control") . " SET saved_thisstep=" . db_quoteall($thisstep) . " where scid=" . $_SESSION['scid']);  // Checked
+                    }
+                    // Check quotas whenever results are saved
+                    $bQuotaMatched = false;
+                    $aQuotas = check_quota('return', $this->sid);
+                    if ($aQuotas !== false)
+                    {
+                        if ($aQuotas != false)
                         {
-                            if ($aQuotas != false)
+                            foreach ($aQuotas as $aQuota)
                             {
-                                foreach ($aQuotas as $aQuota)
-                                {
-                                    if (isset($aQuota['status']) && $aQuota['status'] == 'matched') {
-                                        $bQuotaMatched = true;
-                                    }
+                                if (isset($aQuota['status']) && $aQuota['status'] == 'matched') {
+                                    $bQuotaMatched = true;
                                 }
                             }
                         }
-                        if ($bQuotaMatched)
-                        {
-                            check_quota('enforce',$this->sid);  // will create a page and quit.
-                        }
                     }
-                    else if ($this->surveyOptions['allowsave'] && isset($_SESSION['scid']))
-                        {
-                            $connect->Execute("UPDATE " . db_table_name("saved_control") . " SET saved_thisstep=" . db_quoteall($thisstep) . " where scid=" . $_SESSION['scid']);  // Checked
-                        }
+                    if ($bQuotaMatched)
+                    {
+                        check_quota('enforce',$this->sid);  // will create a page and quit.
+                    }
                 }
                 if (($this->debugLevel & LEM_DEBUG_VALIDATION_SUMMARY) == LEM_DEBUG_VALIDATION_SUMMARY) {
                     $message .= $query;
@@ -3446,10 +3445,10 @@
         }
 
         /**
-         * Get last move information, optionally clearing the substitution cache
-         * @param type $clearSubstitutionInfo
-         * @return type
-         */
+        * Get last move information, optionally clearing the substitution cache
+        * @param type $clearSubstitutionInfo
+        * @return type
+        */
         static function GetLastMoveResult($clearSubstitutionInfo=false)
         {
             $LEM =& LimeExpressionManager::singleton();
@@ -5922,9 +5921,9 @@ EOD;
                 {
                     foreach  ($updates as $key=>$value)
                     {
-                        $query = "UPDATE ".db_table_name('question_attributes')." SET value='".addslashes($value)."' WHERE qid=".$qid." and attribute='".addslashes($key)."';";
+                        $query = "UPDATE ".db_table_name('question_attributes')." SET value=".db_quoteall($value)." WHERE qid=".$qid." and attribute=".db_quoteall($key);
                         $queries[] = $query;
-                        $query = "DELETE FROM ".db_table_name('question_attributes')." WHERE qid=".$qid." and attribute='".addslashes($reverseAttributeMap[$key])."';";
+                        $query = "DELETE FROM ".db_table_name('question_attributes')." WHERE qid=".$qid." and attribute=".db_quoteall($reverseAttributeMap[$key]);
                         $queries[] = $query;
 
                     }
@@ -6104,7 +6103,14 @@ EOD;
                     $type = $qinfo['info']['type'];
                     if ($relevant && $grelevant && $sqrelevant)
                     {
-                        $value = (isset($_POST[$sq]) ? $_POST[$sq] : '');
+                        if ($qinfo['info']['hidden'])
+                        {
+                            $value = (isset($_SESSION[$sq]) ? $_SESSION[$sq] : '');    // if always hidden, use the default value, if any
+                        }
+                        else
+                        {
+                            $value = (isset($_POST[$sq]) ? $_POST[$sq] : '');
+                        }
                         if ($radixchange && isset($LEM->knownVars[$sq]['onlynum']) && $LEM->knownVars[$sq]['onlynum']=='1')
                         {
                             // convert from comma back to decimal
