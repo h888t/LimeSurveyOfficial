@@ -808,8 +808,6 @@ elseif ($subaction == "all")
 
         for ($i; $i<$fncount; $i++)
         {
-            var_dump('dtrow', $dtrow);
-            var_dump('fnames', $fnames, $i);
             $browsedatafield=htmlspecialchars($dtrow[$fnames[$i][0]]);
 
             if ( isset($fnames[$i][4]) && $fnames[$i][4] == 'D' && $fnames[$i][0] != '')
