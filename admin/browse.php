@@ -221,7 +221,7 @@ if ($subaction == "id")
     {
         $reportUrl = sprintf("/app_dev.php/en/survey/questions/%d/%d/recommendation",
           $surveyid, $id);
-        $browseoutput .= "<a href='$reportUrl' title='".$clang->gTview("Custom Report")."
+        $browseoutput .= "<a href='$reportUrl' title='".$clang->gTview("Custom Report")."'
                   target='_blank'>"
                 ."<img align='left' hspace='0' border='0' src='$imageurl/download.png' alt='".$clang->gT("Custom Report")."' /></a>\n";
     }
