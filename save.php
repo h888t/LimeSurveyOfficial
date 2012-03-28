@@ -189,6 +189,7 @@ global $errormsg;   // since neeeded by savecontrol()
     }
     }
 
+
  /**
  * This functions saves the answer time for question/group and whole survey.
  * [ It compares current time with the time in $_POST['start_time'] ]

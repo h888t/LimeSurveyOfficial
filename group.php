@@ -233,9 +233,22 @@ else
     if ($thissurvey['active'] == "Y" && isset($_POST['saveall']))
     {
         // must do this here to process the POSTed values
-        $moveResult = LimeExpressionManager::JumpTo($_SESSION['step'],false);   // by jumping to current step, saves data so far
+        //$moveResult = LimeExpressionManager::JumpTo($_SESSION['step'],false);   // by jumping to current step, saves data so far
 
-        showsaveform(); // generates a form and exits, awaiting input
+        //showsaveform(); // generates a form and exits, awaiting input
+        if($thissurvey['tokenanswerspersistence'] != 'Y' || !tableExists('tokens_'.$surveyid))
+        {
+            $moveResult = LimeExpressionManager::JumpTo($_SESSION['step'],false);   // by jumping to current step, saves data so far
+            showsaveform();
+        }
+        else
+        {
+            $moveResult = LimeExpressionManager::JumpTo($_SESSION['step'],false,true,false,false,true);   // by jumping to current step, saves data so far
+            if (!is_null($moveResult))
+            {
+                $flashmessage = savedcontrol();
+            }                        
+        }
     }
 
     if ($thissurvey['active'] == "Y" && isset($_POST['saveprompt']))
@@ -253,6 +266,7 @@ else
         $LEMskipReprocessing=true;
 
         // TODO - does this work automatically for token answer persistence? Used to be savedsilent()
+        
     }
 
     //Now, we check mandatory questions if necessary
@@ -771,16 +785,16 @@ if ($previewgrp)
 {
     // force the group to be visible, even if irrelevant - will not always work
     print <<<END
-    $('#relevanceG' + LEMgid).val(1);
+    $('#relevanceG' + LEMgseq).val(1);
     $(document).ready(function() {
-        $('#group-' + LEMgid).show();
+        $('#group-' + LEMgseq).show();
     });
     $(document).change(function() {
-        $('#group-' + LEMgid).show();
+        $('#group-' + LEMgseq).show();
     });
     $(document).bind('keydown',function(e) {
                 if (e.keyCode == 9) {
-                    $('#group-' + LEMgid).show();
+                    $('#group-' + LEMgseq).show();
                     return true;
                 }
                 return true;
@@ -815,9 +829,11 @@ if (isset($showpopups) && $showpopups == 0 && isset($filenotvalidated) && $filen
 
 
 if (isset($_SESSION['grouplist']))
+    $_gseq = -1;
     foreach ($_SESSION['grouplist'] as $gl)
     {
         $gid=$gl[0];
+        ++$_gseq;
         $groupname=$gl[1];
         $groupdescription=$gl[2];
 
@@ -826,8 +842,8 @@ if (isset($_SESSION['grouplist']))
         }
 
         echo "\n\n<!-- START THE GROUP -->\n";
-        echo "\n\n<div id='group-$gid'";
-        $gnoshow = LimeExpressionManager::GroupIsIrrelevantOrHidden($gid);
+        echo "\n\n<div id='group-$_gseq'";
+        $gnoshow = LimeExpressionManager::GroupIsIrrelevantOrHidden($_gseq);
         if  ($gnoshow && !$previewgrp)
         {
             echo " style='display: none;'";
@@ -972,10 +988,11 @@ if (!$previewgrp){
                     // show the group label
                     ++$gseq;
                     $g = $_SESSION['grouplist'][$gseq];
-                    $grel = !LimeExpressionManager::GroupIsIrrelevantOrHidden($stepInfo['gid']);
+                    $grel = !LimeExpressionManager::GroupIsIrrelevantOrHidden($gseq);
                     if ($grel)
                     {
-                        echo '<h3>' . FlattenText($g[1]) . "</h3>";
+                        $gtitle = LimeExpressionManager::ProcessString($g[1]);
+                        echo '<h3>' . FlattenText($gtitle) . "</h3>";
                     }
                     $lastGseq = $stepInfo['gseq'];
                 }
@@ -991,7 +1008,16 @@ if (!$previewgrp){
                 $g = $_SESSION['grouplist'][$gseq];
             }
 
-            $sText = (($surveyMode == 'group') ? FlattenText($g[1]) : FlattenText($q[3]));
+            if ($surveyMode == 'group')
+            {
+                $indexlabel = LimeExpressionManager::ProcessString($g[1]);
+            }
+            else
+            {
+                $indexlabel = LimeExpressionManager::ProcessString($q[3]);
+            }
+
+            $sText = (($surveyMode == 'group') ? FlattenText($indexlabel) : FlattenText($indexlabel));
             $bGAnsw = !$stepInfo['anyUnanswered'];
 
             ++$v;

@@ -2276,7 +2276,7 @@ function createFieldMap($surveyid, $style='full', $force_refresh=false, $questio
         //Get list of questions
     if (is_null($sQuestionLanguage))
     {
-        if (isset($_SESSION['s_lang'])) {
+        if (isset($_SESSION['s_lang'])&& in_array($_SESSION['s_lang'],GetAdditionalLanguagesFromSurveyID($surveyid)) ) {
             $sQuestionLanguage = $_SESSION['s_lang'];
         }
         else {
@@ -2290,7 +2290,7 @@ function createFieldMap($surveyid, $style='full', $force_refresh=false, $questio
     $s_lang = $clang->langcode;
 
     //checks to see if fieldmap has already been built for this page.
-    if (isset($_SESSION['fieldmap-' . $surveyid . $s_lang]) && !$force_refresh) {
+    if (isset($_SESSION['fieldmap-' . $surveyid . $s_lang]) && !$force_refresh && $questionid == false) {
         if (isset($_SESSION['adminlang']) && $clang->langcode != $_SESSION['adminlang']) {
             $clang = new limesurvey_lang($_SESSION['adminlang']);
         }
@@ -2841,7 +2841,59 @@ function createFieldMap($surveyid, $style='full', $force_refresh=false, $questio
         }
     }
     if (isset($fieldmap)) {
-        $_SESSION['fieldmap-' . $surveyid . $clang->langcode]=$fieldmap;
+        if ($questionid == false)
+        {
+            // If the fieldmap was randomized, the master will contain the proper order.  Copy that fieldmap with the new language settings.
+            if (isset($_SESSION['fieldmap-' . $surveyid . '-randMaster']))
+            {
+                $masterFieldmap = $_SESSION['fieldmap-' . $surveyid . '-randMaster'];
+                $mfieldmap = $_SESSION[$masterFieldmap];
+
+                foreach ($mfieldmap as $fieldname => $mf)
+                {
+                    if (isset($fieldmap[$fieldname]))
+                    {
+                        $f = $fieldmap[$fieldname];
+                        if (isset($f['question']))
+                        {
+                            $mf['question'] = $f['question'];
+                        }
+                        if (isset($f['subquestion']))
+                        {
+                            $mf['subquestion'] = $f['subquestion'];
+                        }
+                        if (isset($f['subquestion1']))
+                        {
+                            $mf['subquestion1'] = $f['subquestion1'];
+                        }
+                        if (isset($f['subquestion2']))
+                        {
+                            $mf['subquestion2'] = $f['subquestion2'];
+                        }
+                        if (isset($f['group_name']))
+                        {
+                            $mf['group_name'] = $f['group_name'];
+                        }
+                        if (isset($f['answerList']))
+                        {
+                            $mf['answerList'] = $f['answerList'];
+                        }
+                        if (isset($f['defaultvalue']))
+                        {
+                            $mf['defaultvalue'] = $f['defaultvalue'];
+                        }
+                        if (isset($f['help']))
+                        {
+                            $mf['help'] = $f['help'];
+                        }
+                    }
+                    $mfieldmap[$fieldname] = $mf;
+                }
+                $fieldmap = $mfieldmap;
+            }
+
+            $_SESSION['fieldmap-' . $surveyid . $clang->langcode]=$fieldmap;
+        }
 
         if (isset($_SESSION['adminlang']) && $clang->langcode != $_SESSION['adminlang']) {
             $clang = new limesurvey_lang($_SESSION['adminlang']);
