@@ -127,6 +127,7 @@ if ($subaction == "id")
 
 
     $fieldmap=createFieldMap($surveyid,'full',false,false,$language);
+    // var_dump($fieldmap);
 
     //add token to top of list if survey is not private
     if ($surveyinfo['anonymized'] == "N" && tableExists('tokens_'.$surveyid))
@@ -215,6 +216,17 @@ if ($subaction == "id")
             ."\t<div class='menubar-main'>\n"
             ."<img src='$imageurl/blank.gif' width='31' height='20' border='0' hspace='0' align='left' alt='' />\n"
             ."<img src='$imageurl/seperator.gif' border='0' hspace='0' align='left' alt='' />\n";
+    // custom Report
+    // if (1 /* || bHasCustomReport($surveyid)*/)
+    {
+        $reportUrl = sprintf("/app_dev.php/en/survey/question/%d/%d/recommendation",
+          $surveyid, $id);
+        $browseoutput .= "<a href='$reportUrl' title='".$clang->gTview("Custom Report")."
+                  target='_blank'>"
+                ."<img align='left' hspace='0' border='0' src='$imageurl/download.png' alt='".$clang->gT("Custom Report")."' /></a>\n";
+    }
+
+
     if (isset($rlanguage))
     {
         $browseoutput .="<a href='$scriptname?action=dataentry&amp;subaction=edit&amp;id=$id&amp;sid=$surveyid&amp;language=$rlanguage' "
