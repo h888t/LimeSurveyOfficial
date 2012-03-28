@@ -219,7 +219,7 @@ if ($subaction == "id")
     // custom Report
     // if (1 /* || bHasCustomReport($surveyid)*/)
     {
-        $reportUrl = sprintf("/app_dev.php/en/survey/question/%d/%d/recommendation",
+        $reportUrl = sprintf("/app_dev.php/en/survey/questions/%d/%d/recommendation",
           $surveyid, $id);
         $browseoutput .= "<a href='$reportUrl' title='".$clang->gTview("Custom Report")."
                   target='_blank'>"
