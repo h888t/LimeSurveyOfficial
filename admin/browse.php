@@ -219,7 +219,7 @@ if ($subaction == "id")
     // custom Report
     // if (1 /* || bHasCustomReport($surveyid)*/)
     {
-        $reportUrl = sprintf("/app_dev.php/en/survey/questions/%d/%d/recommendation",
+        $reportUrl = sprintf("/app_dev.php/en/survey/response/%d/%d/recommendation",
           $surveyid, $id);
         $browseoutput .= "<a href='$reportUrl' title='".$clang->gTview("Custom Report")."'
                   target='_blank'>"
@@ -808,6 +808,8 @@ elseif ($subaction == "all")
 
         for ($i; $i<$fncount; $i++)
         {
+            var_dump('dtrow', $dtrow);
+            var_dump('fnames', $fnames, $i);
             $browsedatafield=htmlspecialchars($dtrow[$fnames[$i][0]]);
 
             if ( isset($fnames[$i][4]) && $fnames[$i][4] == 'D' && $fnames[$i][0] != '')
