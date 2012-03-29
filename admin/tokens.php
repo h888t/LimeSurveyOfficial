@@ -172,13 +172,13 @@
 
     $bresult = db_execute_assoc($bquery) or die ("$bquery<br />".htmlspecialchars($connect->ErrorMsg()));
     $bfieldcount=$bresult->FieldCount();
-    
+
     //HEADERS should be after the above query else timeout errors in case there are lots of tokens!
     header("Content-Disposition: attachment; filename=tokens_".$surveyid.".csv");
     header("Content-type: text/comma-separated-values; charset=UTF-8");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Pragma: cache");
-        
+
     // Export UTF8 WITH BOM
     $tokenoutput = chr(hexdec('EF')).chr(hexdec('BB')).chr(hexdec('BF'));
     $tokenoutput .= "tid,firstname,lastname,email,emailstatus,token,language,validfrom,validuntil,invited,reminded,remindercount,completed,usesleft";
@@ -901,13 +901,13 @@
         $tokenoutput .="<ul><li><a href='#' onclick=\"if( confirm('"
         .$clang->gT("Are you really sure you want to reset all invitation records to NO?","js")."')) {".get2post("$scriptname?action=tokens&amp;sid=$surveyid&amp;subaction=clearinvites")."}\">".$clang->gT("Set all entries to 'No invitation sent'.")."</a></li>\n"
         ."<li><a href='#' onclick=\"if ( confirm('"
-        .$clang->gT("Are you sure you want to delete all unique token strings?","js")."')) {".get2post("$scriptname?action=tokens&amp;sid=$surveyid&amp;subaction=cleartokens")."}\">".$clang->gT("Delete all unique token strings")."</a></li>\n";
+        .$clang->gT("Are you sure you want to delete all unique token strings?","js")."')) {".get2post("$scriptname?action=tokens&amp;sid=$surveyid&amp;subaction=cleartokens")."}\">".$clang->gT("Delete all unique token strings").".</a></li>\n";
     }
     if (bHasSurveyPermission($surveyid, 'tokens', 'delete'))
     {
 
         $tokenoutput .="<li><a href='#' onclick=\" if (confirm('"
-        .$clang->gT("Are you really sure you want to delete ALL token entries?","js")."')) {".get2post("$scriptname?action=tokens&amp;sid=$surveyid&amp;subaction=deleteall")."}\">".$clang->gT("Delete all token entries")."</a></li>\n";
+        .$clang->gT("Are you really sure you want to delete ALL token entries?","js")."')) {".get2post("$scriptname?action=tokens&amp;sid=$surveyid&amp;subaction=deleteall")."}\">".$clang->gT("Delete all token entries").".</a></li>\n";
     }
     $tokenoutput .= "</ul></div>\n";
     }
@@ -2934,7 +2934,6 @@
             }
             $message .= "</ul>";
         }
-        $message .= "</div>";
 
         $tokenoutput .= "$message<br />\n";
         unlink($the_full_file_path);
