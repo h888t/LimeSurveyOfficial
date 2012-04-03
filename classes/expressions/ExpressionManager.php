@@ -153,9 +153,13 @@ class ExpressionManager {
 'count' => array('exprmgr_count', 'LEMcount', $this->gT('Count the number of answered questions in the list'), 'number count(arg1, arg2, ... argN)', '', -1),
 'date' => array('date', 'date', $this->gT('Format a local date/time'), 'string date(format [, timestamp=time()])', 'http://www.php.net/manual/en/function.date.php', 1,2),
 'exp' => array('exp', 'Math.exp', $this->gT('Calculates the exponent of e'), 'number exp(number)', 'http://www.php.net/manual/en/function.exp.php', 1),
-'fixnum' => array('exprmgr_fixnum', 'LEMfixnum', $this->gT('Display numbers with comma as radix separator, if needed'), 'string fixnum(number)', '', 1),            
+'fixnum' => array('exprmgr_fixnum', 'LEMfixnum', $this->gT('Display numbers with comma as radix separator, if needed'), 'string fixnum(number)', '', 1),
 'floor' => array('floor', 'Math.floor', $this->gT('Round fractions down'), 'number floor(number)', 'http://www.php.net/manual/en/function.floor.php', 1),
-'gmdate' => array('gmdate', 'gmdate', $this->gT('Format a GMT date/time'), 'string gmdate(format [, timestamp=time()])', 'http://www.php.net/manual/en/function.gmdate.php', 1,2),
+
+// tac
+'get' => array('expr_mgr_get', 'getParameterByName', $this->gT('Get varname from the querystring'), 'string get(string varname[, string default])', 'http://us3.php.net/manual/en/reserved.variables.get.php', 1,2),
+
+ 'gmdate' => array('gmdate', 'gmdate', $this->gT('Format a GMT date/time'), 'string gmdate(format [, timestamp=time()])', 'http://www.php.net/manual/en/function.gmdate.php', 1,2),
 'html_entity_decode' => array('html_entity_decode', 'html_entity_decode', $this->gT('Convert all HTML entities to their applicable characters (always uses ENT_QUOTES and UTF-8)'), 'string html_entity_decode(string)', 'http://www.php.net/manual/en/function.html-entity-decode.php', 1),
 'htmlentities' => array('htmlentities', 'htmlentities', $this->gT('Convert all applicable characters to HTML entities (always uses ENT_QUOTES and UTF-8)'), 'string htmlentities(string)', 'http://www.php.net/manual/en/function.htmlentities.php', 1),
 'htmlspecialchars' => array('expr_mgr_htmlspecialchars', 'htmlspecialchars', $this->gT('Convert special characters to HTML entities (always uses ENT_QUOTES and UTF-8)'), 'string htmlspecialchars(string)', 'http://www.php.net/manual/en/function.htmlspecialchars.php', 1),
@@ -1111,7 +1115,7 @@ class ExpressionManager {
                 if ($val != '' && $qseq == $this->questionSeq) {
                     $jsNames[] = $val;
                 }
-            }            
+            }
         }
         return array_unique($jsNames);
     }
@@ -3171,7 +3175,7 @@ function exprmgr_regexMatch($pattern, $input)
 /**
  * Display number with comma as radix separator, if needed
  * @param type $value
- * @return type 
+ * @return type
  */
 function exprmgr_fixnum($value)
 {
@@ -3183,4 +3187,7 @@ function exprmgr_fixnum($value)
     return $value;
 }
 
-?>
+function expr_mgr_get($var, $default=null) {
+  return isset($_GET[$var]) ? $_GET[$var] : $default;
+}
+

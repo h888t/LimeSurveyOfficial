@@ -2485,3 +2485,16 @@ function time () {
     // *     results 1: timeStamp > 1000000000 && timeStamp < 2000000000
     return Math.floor(new Date().getTime() / 1000);
 }
+
+// from http://stackoverflow.com/questions/901115/get-query-string-values-in-javascript
+function getParameterByName(name)
+{
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.search);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
