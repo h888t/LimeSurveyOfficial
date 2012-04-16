@@ -913,7 +913,12 @@ function do_boilerplate($ia)
 
 function do_equation($ia)
 {
-    $answer='<input type="hidden" name="'.$ia[1].'" id="java'.$ia[1].'" value=""/>';
+    $answer='<input type="hidden" name="'.$ia[1].'" id="java'.$ia[1].'" value="';
+    if (isset($_SESSION[$ia[1]]))
+    {
+        $answer .= htmlspecialchars($_SESSION[$ia[1]],ENT_QUOTES);
+    }
+    $answer .= '".>';
     $inputnames[]=$ia[1];
     $mandatory=null;
 
@@ -2492,7 +2497,7 @@ function do_multiplechoice($ia)
         }
     }
     if ($exclude_all_others_auto==1){
-        $answer .= "<script type='text/javascript'>autoArray = ".str_replace('{','{ ',json_encode($autoArray)).";</script>";
+        $answer .= "<script type='text/javascript'>autoArray = ".ls_json_encode($autoArray).";</script>";
     }
     if ($other == 'Y')
     {
@@ -3059,8 +3064,11 @@ function do_file_upload($ia)
 
     $answer = "<script type='text/javascript'>
         var translt = {
-             title: '" . $clang->gT('Upload your files') . "',
-             returnTxt: '" . $clang->gT('Return to survey') . "'
+             title: '" . $clang->gT('Upload your files','js') . "',
+             returnTxt: '" . $clang->gT('Return to survey','js') . "',
+             headTitle: '" . $clang->gT('Title','js') . "',
+             headComment: '" . $clang->gT('Comment','js') . "',
+             headFileName: '" . $clang->gT('File name','js') . "',
             };
     </script>\n";
     /*if ($pos)
@@ -4037,7 +4045,7 @@ function do_shortfreetext($ia)
         }
         else{
             if ((int)($qidattributes['location_nodefaultfromip'])==0)
-                $currentLatLong = getLatLongFromIp($_SERVER['REMOTE_ADDR']);
+                $currentLatLong = getLatLongFromIp(getIPAddress());
             if (!isset($currentLatLong) || $currentLatLong==false){
                 $floatLat = 0;
                 $floatLng = 0;

@@ -787,6 +787,18 @@ $action!='vvimport' && $action!='vvexport' && $action!='exportresults')
         templatereplace($surveyinfo['surveyls_welcometext']);
         $surveysummary .= LimeExpressionManager::GetLastPrettyPrintExpression();
 
+        if (trim($surveyinfo['surveyls_endtext'])!='')
+        {
+            $surveysummary .= "</td></tr>\n"
+            . "<tr >\n"
+            . "<td align='right' valign='top'><strong>"
+            . $clang->gT("End message:")."</strong></td>\n"
+            . "<td align='left'>";
+
+            templatereplace($surveyinfo['surveyls_endtext']);
+            $surveysummary .= LimeExpressionManager::GetLastPrettyPrintExpression();
+        }
+
         $surveysummary .= "</td></tr>\n"
         . "<tr ><td align='right' valign='top'><strong>"
         . $clang->gT("Administrator:")."</strong></td>\n"
@@ -861,7 +873,11 @@ $action!='vvimport' && $action!='vvexport' && $action!='exportresults')
         . "<td align='left'>";
         if ($surveyinfo['surveyls_url']!="")
         {
-            $surveysummary .=" <a target='_blank' href=\"".htmlspecialchars($surveyinfo['surveyls_url'])."\" title=\"".htmlspecialchars($surveyinfo['surveyls_url'])."\">{$surveyinfo['surveyls_urldescription']}</a>";
+            templatereplace($surveyinfo['surveyls_url']);
+            $_url = htmlspecialchars(strip_tags(LimeExpressionManager::GetLastPrettyPrintExpression()));
+            templatereplace($surveyinfo['surveyls_urldescription']);
+            $_desc = LimeExpressionManager::GetLastPrettyPrintExpression();
+            $surveysummary .=" <a target='_blank' href=\"".$_url."\" title=\"".$_url."\">{$_desc}</a>";
         }
         else
         {

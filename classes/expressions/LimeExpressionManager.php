@@ -2315,18 +2315,24 @@
                 . "','sgqa':'" . $sgqa
                 . "','qid':" . $questionNum
                 . ",'gid':" . $groupNum
-                . ",'mandatory':'" . $mandatory
-                . "','question':'" . htmlspecialchars(preg_replace('/[[:space:]]/',' ',$question),ENT_QUOTES)
-                . "','type':'" . $type
-                . "','relevance':'" . (($relevance != '') ? htmlspecialchars(preg_replace('/[[:space:]]/',' ',$relevance),ENT_QUOTES) : 1)
-                . "','readWrite':'" . $readWrite
-                . "','grelevance':'" . (($grelevance != '') ? htmlspecialchars(preg_replace('/[[:space:]]/',' ',$grelevance),ENT_QUOTES) : 1)
+//                . ",'mandatory':'" . $mandatory
+//                . "','question':'" . htmlspecialchars(preg_replace('/[[:space:]]/',' ',$question),ENT_QUOTES)
+                . ",'type':'" . $type
+//                . "','relevance':'" . (($relevance != '') ? htmlspecialchars(preg_replace('/[[:space:]]/',' ',$relevance),ENT_QUOTES) : 1)
+//                . "','readWrite':'" . $readWrite
+//                . "','grelevance':'" . (($grelevance != '') ? htmlspecialchars(preg_replace('/[[:space:]]/',' ',$grelevance),ENT_QUOTES) : 1)
                 . "','default':'" . (is_null($defaultValue) ? '' : $defaultValue)
                 . "','rowdivid':'" . (is_null($rowdivid) ?  '' : $rowdivid)
                 . "','onlynum':'" . ($onlynum ? '1' : '')
                 . "','gseq':" . $groupSeq
-                . ",'qseq':" . $questionSeq
-                .$ansList."}";
+//                . ",'qseq':" . $questionSeq
+                .$ansList;
+
+                if ($type == 'M' || $type == 'P')
+                {
+                    $this->varNameAttr[$jsVarName] .= ",'question':'" . htmlspecialchars(preg_replace('/[[:space:]]/',' ',$question),ENT_QUOTES) . "'";
+                }
+                $this->varNameAttr[$jsVarName] .= "}";
 
             }
 
@@ -2337,6 +2343,12 @@
             {
                 //Gather survey data for tokenised surveys, for use in presenting questions
                 $_SESSION['thistoken']=getTokenData($surveyid, $_SESSION['token']);
+                $this->knownVars['TOKEN:TOKEN'] = array(
+                    'code'=>$_SESSION['token'],
+                    'jsName_on'=>'',
+                    'jsName'=>'',
+                    'readWrite'=>'N',
+                );
             }
             if (isset($_SESSION['thistoken']))
             {
@@ -2362,7 +2374,9 @@
             }
             else
             {
-                // Explicitly set all tokens to blank
+                // Read list of available tokens from the tokens table so that preview and error checking works correctly
+                $attrs = GetAttributeFieldNames($surveyid,false);
+
                 $blankVal = array(
                 'code'=>'',
                 'type'=>'',
@@ -2370,13 +2384,13 @@
                 'jsName'=>'',
                 'readWrite'=>'N',
                 );
-                $this->knownVars['TOKEN:FIRSTNAME'] = $blankVal;
-                $this->knownVars['TOKEN:LASTNAME'] = $blankVal;
-                $this->knownVars['TOKEN:EMAIL'] = $blankVal;
-                $this->knownVars['TOKEN:USESLEFT'] = $blankVal;
-                for ($i=1;$i<=100;++$i) // TODO - is there a way to know  how many attributes are set?  Looks like max is 100
+
+                foreach ($attrs as $key)
                 {
-                    $this->knownVars['TOKEN:ATTRIBUTE_' . $i] = $blankVal;
+                    if (preg_match('/^(firstname|lastname|email|usesleft|token|attribute_\d+)$/',$key))
+                    {
+                        $this->knownVars['TOKEN:' . strtoupper($key)] = $blankVal;
+                    }
                 }
             }
             // set default value for reserved 'this' variable
@@ -3222,7 +3236,7 @@
                 $today = date_shift(date("Y-m-d H:i:s"), "Y-m-d H:i:s", $this->surveyOptions['timeadjust']);
                 $sdata = array(
                 "datestamp"=>$today,
-                "ipaddr"=>(($this->surveyOptions['ipaddr'] && isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : ''),
+                "ipaddr"=>(($this->surveyOptions['ipaddr']) ? getIPAddress() : ''),
                 "startlanguage"=>$this->surveyOptions['startlanguage'],
                 "token"=>($this->surveyOptions['token']),
                 "datestamp"=>($this->surveyOptions['datestamp'] ? $_SESSION['datestamp'] : NULL),
@@ -3281,8 +3295,8 @@
                 if ($this->surveyOptions['datestamp'] && isset($_SESSION['datestamp'])) {
                     $setter[] = db_quote_id('datestamp') . "=" . db_quoteall($_SESSION['datestamp']);
                 }
-                if ($this->surveyOptions['ipaddr'] && isset($_SERVER['REMOTE_ADDR'])) {
-                    $setter[] = db_quote_id('ipaddr') . "=" . db_quoteall($_SERVER['REMOTE_ADDR']);
+                if ($this->surveyOptions['ipaddr']) {
+                    $setter[] = db_quote_id('ipaddr') . "=" . db_quoteall(getIPAddress());
                 }
                 if ($finished) {
                     $setter[] = db_quote_id('submitdate') . "=" . db_quoteall($_SESSION['datestamp']);
@@ -4246,9 +4260,9 @@
                         if (isset($qattr['multiflexible_checkbox']) && $qattr['multiflexible_checkbox'] == 1)
                         {
                             // Need to check whether there is at least one checked box per row
-                            foreach ($LEM->subQrelInfo[$qid] as $sq)
+                            foreach ($LEM->q2subqInfo[$qid]['subqs'] as $sq)
                             {
-                                if ($_SESSION['relevanceStatus'][$sq['rowdivid']])
+                                if (!isset($_SESSION['relevanceStatus'][$sq['rowdivid']]) || $_SESSION['relevanceStatus'][$sq['rowdivid']])
                                 {
                                     $rowCount=0;
                                     $numUnanswered=0;
@@ -4797,7 +4811,7 @@
             $jsParts=array();
             $allJsVarsUsed=array();
             $rowdividList=array();   // list of subquestions needing relevance entries
-            $jsParts[] = '<script type="text/javascript" src="'.$rooturl.'/classes/expressions/em_javascript.js"></script>';
+            $jsParts[] = '<script type="text/javascript" src="'.$rooturl.'/scripts/em_javascript.js"></script>';
             $jsParts[] = "\n<script type='text/javascript'>\n<!--\n";
             $jsParts[] = "var LEMmode='" . $LEM->surveyMode . "';\n";
             if ($LEM->surveyMode == 'group')
@@ -6091,7 +6105,7 @@ EOD;
                                                 $phparray[$i]->filename = $sDestinationFileName;
                                             }
                                         }
-                                        $value = str_replace('{','{ ',json_encode($phparray));  // so that EM doesn't try to parse it.
+                                        $value = ls_json_encode($phparray);  // so that EM doesn't try to parse it.
                                     }
                                 }
                                 break;
@@ -6170,7 +6184,12 @@ EOD;
             if (is_null($attr))
             {
                 // then use the requested attribute, if any
-                $attr = (count($args)==2) ? $args[1] : 'code';
+                $_attr = 'code';
+                if (preg_match("/INSERTANS:/",$args[0]))
+                {
+                    $_attr = 'shown';
+                }
+                $attr = (count($args)==2) ? $args[1] : $_attr;
             }
             switch ($attr)
             {

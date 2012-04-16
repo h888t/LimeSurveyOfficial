@@ -348,7 +348,7 @@ if ($action == "editquestion" || $action=="addquestion")
     $qCodeToInfo = 'qCodeToInfo = {';
     foreach ($qtypelist as $qtype=>$qdesc){
         $qDescToCode .= " '{$qdesc['description']}' : '{$qtype}', \n";
-        $qCodeToInfo .= " '{$qtype}' : '".json_encode($qdesc)."', \n";
+        $qCodeToInfo .= " '{$qtype}' : '".ls_json_encode($qdesc)."', \n";
     }
     $qTypeOutput = "$qDescToCode 'null':'null' }; \n $qCodeToInfo 'null':'null' };";
 
@@ -408,9 +408,11 @@ if ($action == "editquestion" || $action=="addquestion")
     . "\t<div class='settingrow'><span class='settingcaption'>".$clang->gT("Help:")."</span>\n"
     . "<span class='settingentry'><textarea cols='50' rows='4' name='help_{$eqrow['language']}'>{$eqrow['help']}</textarea>\n"
     . getEditor("question-help","help_".$eqrow['language'], "[".$clang->gT("Help:", "js")."](".$eqrow['language'].")",$surveyid,$gid,$qid,$action)
+    . "<!--"
     . "\t</span></div>\n"
     . "\t<div class='settingrow'><span class='settingcaption'>&nbsp;</span>\n"
     . "<span class='settingentry'>&nbsp;\n"
+    . "-->"
     . "\t</span></div>\n";
     $editquestion .= '&nbsp;</div>';
 
@@ -449,9 +451,11 @@ if ($action == "editquestion" || $action=="addquestion")
             . "\t<div class='settingrow'><span class='settingcaption'>".$clang->gT("Help:")."</span>\n"
             . "<span class='settingentry'><textarea cols='50' rows='4' name='help_{$addlanguage}'></textarea>\n"
             . getEditor("question-help","help_".$addlanguage, "[".$clang->gT("Help:", "js")."](".$addlanguage.")",$surveyid,$gid,$qid,$action)
+            . "<!--"
             . "\t</span></div>\n"
             . "\t<div class='settingrow'><span class='settingcaption'>&nbsp;</span>\n"
             . "<span class='settingentry'>&nbsp;\n"
+            . "-->"
             . "\t</span></div>\n";
             $editquestion .= '</div>';
         }
@@ -924,7 +928,7 @@ if ($action == "ajaxlabelsetdetails")
         $labels=$connect->GetArray($query);
         $resultdata[]=array($language=>array($labels,getLanguageNameFromCode($language,false)));
     }
-    echo json_encode($resultdata);
+    echo ls_json_encode($resultdata);
 }
 
 
@@ -941,7 +945,7 @@ if ($action == "ajaxlabelsetpicker")
         $language=null;
     }
     $resultdata=getlabelsets($language);
-    echo json_encode($resultdata);
+    echo ls_json_encode($resultdata);
 }
 
 

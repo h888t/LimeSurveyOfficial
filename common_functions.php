@@ -4424,7 +4424,7 @@ function doFooter()
 
 // This function replaces field names in a text with the related values
 // (e.g. for email and template functions)
-function ReplaceFields ($text,$fieldsarray, $bReplaceInsertans=true)
+function ReplaceFields ($text,$fieldsarray, $bReplaceInsertans=true, $staticReplace=true)
 {
 
     if ($bReplaceInsertans)
@@ -4434,7 +4434,7 @@ function ReplaceFields ($text,$fieldsarray, $bReplaceInsertans=true)
         {
             $replacements[substr($key,1,-1)] = $value;
         }
-        $text = LimeExpressionManager::ProcessString($text, NULL, $replacements, false, 2, 1);
+        $text = LimeExpressionManager::ProcessString($text, NULL, $replacements, false, 2, 1, false, false, $staticReplace);
     }
     else
     {
@@ -4643,7 +4643,7 @@ function FlattenText($sTextToFlatten, $bDecodeHTMLEntities=false, $sCharset='UTF
         $sNicetext = strip_tags($sNicetext);
     }
     if ($bStripNewLines ){  // strip new lines
-        $sNicetext = preg_replace(array('~\Ru~','/\s{2,}/'),array(' ',' '), $sNicetext);
+        $sNicetext = preg_replace(array('~\Ru~'),array(' '), $sNicetext);
     }
     else // unify newlines to \r\n
     {
@@ -6357,7 +6357,7 @@ function getQuotaInformation($surveyid,$language,$quotaid='all')
                                          'Limit' => $survey_quotas['qlimit'],
                                          'Action' => $survey_quotas['action'],
                                          'Message' => $survey_quotas['quotals_message'],
-                                         'Url' => passthruReplace(insertansReplace($survey_quotas['quotals_url']), $surveyinfo),
+                                         'Url' => templatereplace(passthruReplace($survey_quotas['quotals_url']), $surveyinfo),
                                          'UrlDescrip' => $survey_quotas['quotals_urldescrip'],
                                          'AutoloadUrl' => $survey_quotas['autoload_url']));
             $query = "SELECT * FROM ".db_table_name('quota_members')." WHERE quota_id='{$survey_quotas['id']}'";
@@ -6514,7 +6514,7 @@ function filterforattributes ($fieldname)
 * @param mixed $surveyid  The survey ID
 * @return array The fieldnames
 */
-function GetAttributeFieldNames($surveyid)
+function GetAttributeFieldNames($surveyid,$filter=true)
 {
     global $dbprefix, $connect;
     if (tableExists('tokens_'.$surveyid) === false)
@@ -6522,7 +6522,11 @@ function GetAttributeFieldNames($surveyid)
         return Array();
     }
     $tokenfieldnames = array_values($connect->MetaColumnNames("{$dbprefix}tokens_$surveyid", true));
-    return array_filter($tokenfieldnames,'filterforattributes');
+    if ($filter)
+    {
+        return array_filter($tokenfieldnames,'filterforattributes');
+    }
+    return $tokenfieldnames;
 }
 
 /**
@@ -6659,14 +6663,14 @@ function cleanTempDirectory()
     $dir=  $tempdir.'/';
     $dp = opendir($dir) or die ('Could not open temporary directory');
     while ($file = readdir($dp)) {
-        if (is_file($dir.$file) && (filemtime($dir.$file)) < (strtotime('-1 days')) && $file!='index.html' && $file!='readme.txt' && $file!='..' && $file!='.' && $file!='.svn') {
+        if (is_file($dir.$file) && (filemtime($dir.$file)) < (strtotime('-1 days')) && $file!='.gitignore' && $file!='index.html' && $file!='readme.txt' && $file!='..' && $file!='.' && $file!='.svn') {
             @unlink($dir.$file);
         }
     }
     $dir=  $tempdir.'/upload/';
     $dp = opendir($dir) or die ('Could not open temporary directory');
     while ($file = readdir($dp)) {
-        if (is_file($dir.$file) && (filemtime($dir.$file)) < (strtotime('-1 days')) && $file!='index.html' && $file!='readme.txt' && $file!='..' && $file!='.' && $file!='.svn') {
+        if (is_file($dir.$file) && (filemtime($dir.$file)) < (strtotime('-1 days')) && $file!='.gitignore' && $file!='index.html' && $file!='readme.txt' && $file!='..' && $file!='.' && $file!='.svn') {
             @unlink($dir.$file);
         }
     }
@@ -6933,7 +6937,11 @@ function getSubQuestions($sid, $qid, $sLanguage) {
     global $dbprefix, $connect, $clang;
     static $subquestions;
 
-    if (!isset($subquestions[$sid])) {
+    if (!isset($subquestions[$sid]))
+    {
+        $subquestions[$sid]=array();
+    }
+    if (!isset($subquestions[$sid][$sLanguage])) {
 	    $sid = sanitize_int($sid);
 	    $query = "SELECT sq.*, q.other FROM {$dbprefix}questions as sq, {$dbprefix}questions as q"
 	            ." WHERE sq.parent_qid=q.qid AND q.sid=$sid"
@@ -6946,9 +6954,9 @@ function getSubQuestions($sid, $qid, $sLanguage) {
 	    {
 	        $resultset[$row['parent_qid']][] = $row;
 	    }
-	    $subquestions[$sid] = $resultset;
+	    $subquestions[$sid][$sLanguage] = $resultset;
     }
-    if (isset($subquestions[$sid][$qid])) return $subquestions[$sid][$qid];
+    if (isset($subquestions[$sid][$sLanguage][$qid])) return $subquestions[$sid][$sLanguage][$qid];
     return array();
 }
 
@@ -7236,5 +7244,44 @@ function fixSubquestions()
 
 }
 
+/**
+ * Need custom version of JSON encode to avoid having Expression Manager mangle it
+ * @param type $val
+ * @return type
+ */
+function ls_json_encode($val)
+{
+    $ans = json_encode($val);
+    $ans = str_replace(array('{','}'),array('{ ',' }'), $ans);
+    return $ans;
+}
+
+/**
+* This function returns the real IP address under all configurations
+*
+*/
+function getIPAddress()
+{
+    global $bServerBehindProxy;
+    if ($bServerBehindProxy)
+    {
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
+        {
+          return $_SERVER['HTTP_CLIENT_IP'];
+        }
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
+        {
+          return $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+    }
+    if (!empty($_SERVER['REMOTE_ADDR']))
+    {
+      return $_SERVER['REMOTE_ADDR'];
+    }
+    else
+    {
+        return '127.0.0.1';
+    }
+}
 
 // Closing PHP tag intentionally omitted - yes, it is okay

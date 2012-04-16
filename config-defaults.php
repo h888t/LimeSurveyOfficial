@@ -573,6 +573,15 @@ $googletranslateapikey = '';
 */
 $iFileUploadTotalSpaceMB=0;
 
+/**
+* Set this variable to true to indicate that your server is behind a proxy.
+* This will ensure the correct captioning of IP addresses instead of just the proxy address
+*
+* @var $bServerBehindProxy  Default: false
+*
+*/
+$bServerBehindProxy=false;
+
 //DO NOT EVER CHANGE THE FOLLOWING 5 LINES ---------------
 $configFile = empty($_SERVER['LIME_CONFIG_FILE']) ?
     dirname(__FILE__) . '/config.php' :

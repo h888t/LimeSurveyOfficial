@@ -78,6 +78,44 @@ HOW TO UPGRADE from a LimeSurvey 1.70(+) version to the latest 1.9x
 Thank you to everyone who helped with this new release!
 
 
+Changes from 1.92+ (build 120405) to 1.92+ (build 120412) April 12, 2012
+-Fixed issue #5962: View Response Details does not work correctly if responses are filtered (Statistics) (Thomas White)
+-Fixed issue #5985: Notifications using INSERTANS and/or QCODE don't work with all-in-one presentation of survey (Thomas White)
+-Fixed issue #5992: After upgrade to Version 1.92+ Build 120405 the uploaded file information gets corrupted. (Thomas White)
+-Fixed issue #6002: @@SURVEYURL@@ placeholder fails to translate (Thomas White)
+-Fixed issue #5976: Iterate survey sets all "uses_left" to "1" even if there has been set a larger number previously (Carsten Schmitz)
+-Fixed issue #5997 : upload windows are on default survey langage (Denis Chenu)
+-Fixed issue: Bad HTML in editgroup(Denis Chenu)
+-Fixed issue: Mssqlnative driver gives back weird date format in export (Carsten Schmitz)
+-Fixed issue: With certain Apache configurations then em_javascript.js file was not readable (Carsten Schmitz)
+#Updated translation: Danish  - kindly provided by Søren O'Neill (Carsten Schmitz)
+#Updated translation: Galician - kindly provided by Carlos Neira Cortizas (Carsten Schmitz)
+#Updated translation: German Updated translation: German (informal) (Carsten Schmitz)
+#Updated translation: Greek by Yannis Kaskamanidis (Carsten Schmitz)
+#Updated translation: Spanish (Mexico) (Carsten Schmitz)
+
+
+Changes from 1.92+ (build 120330) to 1.92+ (build 120405) April 5, 2012
+-Fixed issue #5877: Resume later doesn't work with a survey allowing public registration (Carsten Schmitz)
+-Fixed issue #5971: Strange behavior of expression manager - static equation results not visible (Thomas White)
+-Fixed issue #5979: values prefilled via URL are not passed through to end URL Dev also syntax highlighted end URL  so can see if it contains typos (Thomas White)
+-Fixed issue #5981: EM attributes that should be static generate <span> elements (Thomas White)
+-Fixed issue #5982: Wrong replacement field properties (Thomas White)
+-Fixed issue #5984: Javascript error with upload question type for italian language Dev: add js option on clang (Denis Chenu)
+-Fixed issue #5960: Start language always saved as English (Carsten Schmitz)
+-Fixed issue #5969: Trying to import a question group without a matching language gives no proper error (Carsten Schmitz)
+-Fixed issue: When there are multiple languages, getSubQuestions() returns wrong values (often a mix of language-specific values) (Thomas White)
+
+
+Changes from 1.92+ (build 120325) to 1.92+ (build 120330) Mar 30, 2012
+-Fixed issue #5948: Mandatory directive for question is ignored for array (numbers) using checkbox layout (Thomas White)
+-Fixed issue #5952: Error in statistics (Carsten Schmitz)
+-Fixed issue #5957: Cannot check integrity database (Carsten Schmitz)
+-Fixed issue #5962: View Response details does not work correctly if responses are filtered (Carsten Schmitz)
+-Fixed issue: Certain French characters garbled in statistics display and other areas (Carsten Schmitz)
+-Fixed issue: Error if s_lang are not in survey langage (Denis Chenu)
+-Fixed issue: When trying to export to application then not all fields are shown (Carsten Schmitz)
+
 Changes from 1.92+ (build 120324) to 1.92+ (build 120325) Mar 23, 2012
 -Fixed issue #5877: Resume later doesn't work with a survey allowing public registration (magiclko)
 -Fixed issue: MSSQL error on importing survey (Carsten Schmitz)
