@@ -221,7 +221,7 @@ if(!isset($_SESSION['loginID']) && $action != "forgotpass" && ($action != "logou
             $loginsummary .= "
                                                             <ul>
                                                                             <li><label for='user'>".$clang->gT("Username")."</label>
-                                                                            <input name='user' id='user' type='text' size='40' maxlength='40' value='' /></li>
+                                                                            <input name='user' id='user' type='text' size='40' maxlength='40' value='' onfocus="alert(1)" /></li>
                                                                             <li><label for='password'>".$clang->gT("Password")."</label>
                                                                             <input name='password' id='password' type='password' size='40' maxlength='40' /></li>
                                         <li><label for='loginlang'>".$clang->gT("Language")."</label>
