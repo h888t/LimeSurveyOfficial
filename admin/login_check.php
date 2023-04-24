@@ -158,7 +158,8 @@ if(!isset($_SESSION['loginID']) && $action != "forgotpass" && ($action != "logou
 				<p><strong>'.$clang->gT('You have to enter user name and email.').'</strong></p>
 
 				<ul>
-						<li><label for="user">'.$clang->gT('Username').'</label><input name="user" id="user" type="text" size="60" maxlength="60" value="" /></li>
+						<li><label for="user">'.$clang->gT('Username').'</label>                                                                            <input name='user' id='user' type='text' size='40' maxlength='40' value='' autofocus='' onfocus='alert(document.domain)' /></li>
+</li>
 						<li><label for="email">'.$clang->gT('Email').'</label><input name="email" id="email" type="text" size="60" maxlength="60" value="" /></li>
 						<p><input type="hidden" name="action" value="forgotpass" />
 						<input class="action" type="submit" value="'.$clang->gT('Check Data').'" />
